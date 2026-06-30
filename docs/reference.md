@@ -5,30 +5,30 @@ Diataxis quadrant: reference (information-oriented).
 
 ## cadence.catalog
 
-- `Track` (class) - Track(track_id: 'str', title: 'str', artist: 'str', genre: 'str', energy: 'float', tempo_bpm: 'int', popularity: 'float', year: 'int')
-- `build_catalog(seed: 'int' = 0, n: 'int' = 40) -> 'list[Track]'` (function) - Return a deterministic synthetic catalog of n tracks.
+- `Book` (class) - Book(book_id: 'str', title: 'str', author: 'str', genre: 'str', intensity: 'float', length_hours: 'float', popularity: 'float', year: 'int')
+- `build_catalog(seed: 'int' = 0, n: 'int' = 40) -> 'list[Book]'` (function) - Return a deterministic synthetic catalog of n audiobooks.
 
 ## cadence.users
 
-- `Context` (class) - Context(activity: 'str')
-- `User` (class) - User(user_id: 'str', genre_affinity: 'dict', energy_pref: 'float')
-- `build_users(seed: 'int' = 0, n: 'int' = 8) -> 'list[User]'` (function) - Return n deterministic synthetic users. Each gets two high-affinity top genres.
+- `Context` (class) - Context(situation: 'str')
+- `User` (class) - User(user_id: 'str', genre_affinity: 'dict', intensity_pref: 'float')
+- `build_users(seed: 'int' = 0, n: 'int' = 8) -> 'list[User]'` (function) - Return n deterministic synthetic listeners. Each gets two high-affinity top genres.
 - `get_user(users: 'list[User]', user_id: 'str') -> 'User'` (function) - 
-- `target_energy(context: 'Context') -> 'float'` (function) - 
+- `target_intensity(context: 'Context') -> 'float'` (function) - 
 
 ## cadence.recommender
 
-- `Recommendation` (class) - Recommendation(track: 'Track', score: 'float', rationale: 'str')
-- `RecommenderConfig` (class) - RecommenderConfig(w_genre: 'float' = 0.5, w_energy: 'float' = 0.35, w_popularity: 'float' = 0.15)
-- `recommend(variant: 'str', user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
-- `recommend_diverse(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Personalized scores, re-ranked greedily to spread genres across the list (MMR-style).
-- `recommend_personalized(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
-- `recommend_popularity(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Baseline: ignores the user and context, ranks by global popularity.
-- `score_track(track: 'Track', user: 'User', context: 'Context', config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'float'` (function) - 
+- `Recommendation` (class) - Recommendation(book: 'Book', score: 'float', rationale: 'str')
+- `RecommenderConfig` (class) - RecommenderConfig(w_genre: 'float' = 0.5, w_intensity: 'float' = 0.35, w_popularity: 'float' = 0.15)
+- `recommend(variant: 'str', user: 'User', context: 'Context', catalog: 'list[Book]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_intensity=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
+- `recommend_diverse(user: 'User', context: 'Context', catalog: 'list[Book]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_intensity=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Personalized scores, re-ranked greedily to spread genres across the list (MMR-style).
+- `recommend_personalized(user: 'User', context: 'Context', catalog: 'list[Book]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_intensity=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
+- `recommend_popularity(user: 'User', context: 'Context', catalog: 'list[Book]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_intensity=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Baseline: ignores the user and context, ranks by global popularity.
+- `score_book(book: 'Book', user: 'User', context: 'Context', config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_intensity=0.35, w_popularity=0.15)) -> 'float'` (function) - 
 
 ## cadence.rationale
 
-- `explain(track: 'Track', user: 'User', context: 'Context', config) -> 'str'` (function) - 
+- `explain(book: 'Book', user: 'User', context: 'Context', config) -> 'str'` (function) - 
 
 ## cadence.provenance
 

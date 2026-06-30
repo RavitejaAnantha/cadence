@@ -15,7 +15,7 @@ import time
 from cadence.catalog import build_catalog
 from cadence.provenance import run_header, write_run_header
 from cadence.recommender import DEFAULT_CONFIG, recommend
-from cadence.users import ACTIVITIES, Context, build_users
+from cadence.users import SITUATIONS, Context, build_users
 from experiments.bootstrap import clustered_bootstrap_ci, paired_delta_ci
 from experiments.data import generate_logs, relevance_map
 from experiments.metrics import catalog_coverage, intra_list_diversity, ndcg_at_k, recall_at_k
@@ -32,16 +32,16 @@ def ndcg_by_user(variant, users, catalog):
     latencies = []
     for u in users:
         vals = []
-        for a in ACTIVITIES:
-            ctx = Context(a)
+        for s in SITUATIONS:
+            ctx = Context(s)
             rel = relevance_map(u, ctx, catalog)
             t0 = time.perf_counter()
             recs = recommend(variant, u, ctx, catalog, k=K, config=DEFAULT_CONFIG)
             latencies.append((time.perf_counter() - t0) * 1000)
-            ranked = [r.track.track_id for r in recs]
+            ranked = [r.book.book_id for r in recs]
             vals.append(ndcg_at_k(ranked, rel, K))
             recommended.update(ranked)
-            diversity_lists.append([r.track.genre for r in recs])
+            diversity_lists.append([r.book.genre for r in recs])
         by_user[u.user_id] = vals
     guardrails = {
         "coverage": catalog_coverage(recommended, len(catalog)),
@@ -55,14 +55,14 @@ def click_recall_by_user(variant, users, catalog, logs):
     """Per-user recall@K of LOGGED CLICKS. This is the confounded, production-style metric."""
     topk = {}
     for u in users:
-        for a in ACTIVITIES:
-            recs = recommend(variant, u, Context(a), catalog, k=K, config=DEFAULT_CONFIG)
-            topk[(u.user_id, a)] = [r.track.track_id for r in recs]
+        for s in SITUATIONS:
+            recs = recommend(variant, u, Context(s), catalog, k=K, config=DEFAULT_CONFIG)
+            topk[(u.user_id, s)] = [r.book.book_id for r in recs]
     by_user = {u.user_id: [] for u in users}
-    for s in logs:
-        r = recall_at_k(topk[(s.user_id, s.activity)], s.clicks, K)
+    for sess in logs:
+        r = recall_at_k(topk[(sess.user_id, sess.situation)], sess.clicks, K)
         if r is not None:
-            by_user[s.user_id].append(r)
+            by_user[sess.user_id].append(r)
     return {uid: vals for uid, vals in by_user.items() if vals}
 
 

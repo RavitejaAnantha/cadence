@@ -49,7 +49,7 @@ breaks reproducibility and offline use.
 ## Commands
 ```
 uv sync --extra dev
-uv run cadence recommend --user u1 --activity workout
+uv run cadence recommend --user u1 --situation commute
 uv run python -m experiments.run_experiment
 uv run python -m tools.intent_check
 uv run pytest -q

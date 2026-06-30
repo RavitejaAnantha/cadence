@@ -15,10 +15,10 @@ def test_catalog_deterministic():
 
 def test_recommend_deterministic():
     c, u = _setup()
-    usr, ctx = get_user(u, "u1"), Context("workout")
+    usr, ctx = get_user(u, "u1"), Context("commute")
     a = recommend("personalized", usr, ctx, c, k=5)
     b = recommend("personalized", usr, ctx, c, k=5)
-    assert [r.track.track_id for r in a] == [r.track.track_id for r in b]
+    assert [r.book.book_id for r in a] == [r.book.book_id for r in b]
 
 
 def test_respects_k():
@@ -28,40 +28,40 @@ def test_respects_k():
 
 def test_no_duplicates():
     c, u = _setup()
-    ids = [r.track.track_id for r in recommend("personalized", get_user(u, "u2"), Context("party"), c, k=10)]
+    ids = [r.book.book_id for r in recommend("personalized", get_user(u, "u2"), Context("road_trip"), c, k=10)]
     assert len(ids) == len(set(ids))
 
 
 def test_sorted_descending():
     c, u = _setup()
-    recs = recommend("personalized", get_user(u, "u1"), Context("workout"), c, k=8)
+    recs = recommend("personalized", get_user(u, "u1"), Context("commute"), c, k=8)
     scores = [r.score for r in recs]
     assert scores == sorted(scores, reverse=True)
 
 
 def test_baseline_ignores_user_and_context():
     c, u = _setup()
-    a = recommend("baseline", get_user(u, "u1"), Context("workout"), c, k=5)
-    b = recommend("baseline", get_user(u, "u2"), Context("chill"), c, k=5)
-    assert [r.track.track_id for r in a] == [r.track.track_id for r in b]
+    a = recommend("baseline", get_user(u, "u1"), Context("commute"), c, k=5)
+    b = recommend("baseline", get_user(u, "u2"), Context("bedtime"), c, k=5)
+    assert [r.book.book_id for r in a] == [r.book.book_id for r in b]
 
 
 def test_unknown_variant_raises():
     c, u = _setup()
     with pytest.raises(ValueError):
-        recommend("nope", get_user(u, "u1"), Context("workout"), c)
+        recommend("nope", get_user(u, "u1"), Context("commute"), c)
 
 
 def test_diverse_spreads_genres():
     c, u = _setup()
-    usr, ctx = get_user(u, "u1"), Context("workout")
-    pers_genres = {r.track.genre for r in recommend("personalized", usr, ctx, c, k=5)}
-    div_genres = {r.track.genre for r in recommend("diverse", usr, ctx, c, k=5)}
+    usr, ctx = get_user(u, "u1"), Context("commute")
+    pers_genres = {r.book.genre for r in recommend("personalized", usr, ctx, c, k=5)}
+    div_genres = {r.book.genre for r in recommend("diverse", usr, ctx, c, k=5)}
     assert len(div_genres) >= len(pers_genres)
 
 
 def test_diverse_respects_k_and_unique():
     c, u = _setup()
-    recs = recommend("diverse", get_user(u, "u1"), Context("party"), c, k=6)
-    ids = [r.track.track_id for r in recs]
+    recs = recommend("diverse", get_user(u, "u1"), Context("road_trip"), c, k=6)
+    ids = [r.book.book_id for r in recs]
     assert len(recs) == 6 and len(ids) == len(set(ids))

@@ -20,7 +20,7 @@ cause more engagement online. This file says why, and what we would do to earn a
    most relevant. Scoring a new policy on these logs rewards agreeing with the old policy.
    This is off-policy evaluation, and naive replay is biased.
 2. **Position bias.** Click probability in the generator is discounted by rank position, so
-   a relevant track shown at position 9 is underrepresented in clicks.
+   a relevant title shown at position 9 is underrepresented in clicks.
 3. **Feedback loops and non-stationarity.** A deployed recommender changes what users see,
    which changes future logs. The offline estimate assumes a fixed world. It is not fixed.
 

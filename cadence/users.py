@@ -1,7 +1,7 @@
-"""Synthetic users and contexts. Deterministic, seeded, offline. No real user data.
+"""Synthetic listeners and contexts. Deterministic, seeded, offline. No real user data.
 
-A user has a genre affinity map and a baseline energy taste. A context is just an
-activity, which implies a target energy. These are the only signals the recommender uses.
+A listener has a genre affinity map and a baseline intensity taste. A context is the listening
+situation, which implies a target intensity. These are the only signals the recommender uses.
 """
 
 from __future__ import annotations
@@ -11,47 +11,47 @@ from dataclasses import dataclass
 
 from .catalog import GENRES
 
-ACTIVITIES = ("workout", "focus", "chill", "party", "commute")
+SITUATIONS = ("commute", "bedtime", "road_trip", "workout", "focus")
 
-# Each activity implies a target energy level. This is the context signal.
-ACTIVITY_TARGET_ENERGY = {
+# Each situation implies a target intensity (how gripping the listener wants the title to be).
+SITUATION_TARGET_INTENSITY = {
     "workout": 0.85,
-    "party": 0.80,
-    "commute": 0.55,
-    "focus": 0.35,
-    "chill": 0.25,
+    "road_trip": 0.70,
+    "commute": 0.60,
+    "focus": 0.45,
+    "bedtime": 0.20,
 }
 
 
 @dataclass(frozen=True)
 class Context:
-    activity: str
+    situation: str
 
     def __post_init__(self) -> None:
-        if self.activity not in ACTIVITIES:
-            raise ValueError(f"unknown activity {self.activity!r}; expected one of {ACTIVITIES}")
+        if self.situation not in SITUATIONS:
+            raise ValueError(f"unknown situation {self.situation!r}; expected one of {SITUATIONS}")
 
 
 @dataclass(frozen=True)
 class User:
     user_id: str
-    genre_affinity: dict  # genre -> 0..1
-    energy_pref: float    # 0..1, the user's baseline energy taste
+    genre_affinity: dict   # genre -> 0 to 1
+    intensity_pref: float  # 0 to 1, the listener's baseline intensity taste
 
 
-def target_energy(context: Context) -> float:
-    return ACTIVITY_TARGET_ENERGY[context.activity]
+def target_intensity(context: Context) -> float:
+    return SITUATION_TARGET_INTENSITY[context.situation]
 
 
 def build_users(seed: int = 0, n: int = 8) -> list[User]:
-    """Return n deterministic synthetic users. Each gets two high-affinity top genres."""
+    """Return n deterministic synthetic listeners. Each gets two high-affinity top genres."""
     rng = random.Random(1000 + seed)
     users: list[User] = []
     for i in range(n):
         affinity = {g: round(rng.uniform(0.0, 0.3), 3) for g in GENRES}
         for g in rng.sample(GENRES, 2):
             affinity[g] = round(rng.uniform(0.7, 1.0), 3)
-        users.append(User(user_id=f"u{i + 1}", genre_affinity=affinity, energy_pref=round(rng.random(), 3)))
+        users.append(User(user_id=f"u{i + 1}", genre_affinity=affinity, intensity_pref=round(rng.random(), 3)))
     return users
 
 
