@@ -23,18 +23,6 @@ _GENRE_BASE_INTENSITY = {
     "selfhelp": 0.35,
 }
 
-# Loose genre -> typical length in hours.
-_GENRE_BASE_LENGTH = {
-    "fantasy": 22,
-    "history": 18,
-    "scifi": 16,
-    "biography": 14,
-    "mystery": 11,
-    "romance": 9,
-    "business": 7,
-    "selfhelp": 6,
-}
-
 _ADJ = ("Silent", "Hidden", "Last", "Burning", "Quiet", "Broken", "Distant", "Golden", "Hollow", "Northern")
 _NOUN = ("Garden", "Empire", "Promise", "Witness", "Horizon", "Inheritance", "Tide", "Archive", "Reckoning", "Echo")
 _AUTHORS = ("J. R. Calder", "Mara Esposito", "D. Whitfield", "Priya Nair", "Tom Beckett", "Lena Hart", "O. Adeyemi", "S. Kowalski", "R. Mendez", "Anya Sorin")
@@ -64,7 +52,7 @@ def build_catalog(seed: int = 0, n: int = 40) -> list[Book]:
         title = f"The {rng.choice(_ADJ)} {rng.choice(_NOUN)}"
         author = rng.choice(_AUTHORS)
         intensity = min(1.0, max(0.0, _GENRE_BASE_INTENSITY[genre] + rng.uniform(-0.15, 0.15)))
-        length = round(max(2.0, _GENRE_BASE_LENGTH[genre] + rng.uniform(-3, 3)), 1)
+        length = round(rng.uniform(3.0, 25.0), 1)  # length is modeled independent of genre
         popularity = round(rng.random(), 3)
         year = rng.randint(1995, 2025)
         books.append(
