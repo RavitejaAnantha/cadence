@@ -67,9 +67,43 @@ def recommend_popularity(
     ]
 
 
+def recommend_diverse(
+    user: User, context: Context, catalog: list[Track], k: int = 5, config: RecommenderConfig = DEFAULT_CONFIG
+) -> list[Recommendation]:
+    """Personalized scores, re-ranked greedily to spread genres across the list (MMR-style).
+
+    Each already-picked genre adds a penalty, so the list does not collapse onto one genre.
+    This addresses the low intra-list diversity of the plain personalized variant.
+    """
+    scored = sorted(
+        ((score_track(t, user, context, config), t) for t in catalog),
+        key=lambda st: (-st[0], st[1].track_id),
+    )
+    base = {t.track_id: s for s, t in scored}
+    pool = [t for _, t in scored]
+    chosen: list[Track] = []
+    genre_counts: dict = {}
+    penalty_weight = 0.5
+    while pool and len(chosen) < k:
+        best = None
+        best_val = None
+        for t in pool:
+            val = base[t.track_id] - penalty_weight * genre_counts.get(t.genre, 0)
+            if best_val is None or val > best_val or (val == best_val and t.track_id < best.track_id):
+                best, best_val = t, val
+        chosen.append(best)
+        genre_counts[best.genre] = genre_counts.get(best.genre, 0) + 1
+        pool.remove(best)
+    return [
+        Recommendation(track=t, score=round(base[t.track_id], 4), rationale=explain(t, user, context, config))
+        for t in chosen
+    ]
+
+
 VARIANTS = {
     "personalized": recommend_personalized,
     "baseline": recommend_popularity,
+    "diverse": recommend_diverse,
 }
 
 

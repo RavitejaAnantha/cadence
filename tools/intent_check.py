@@ -72,6 +72,15 @@ def check_provenance_fields():
     return ok, f"reproducible keys: {sorted(repro)}"
 
 
+def check_diverse_spreads_genres():
+    catalog = build_catalog(seed=0)
+    users = build_users(seed=0)
+    u, ctx = get_user(users, "u1"), Context("workout")
+    pers = {r.track.genre for r in recommend("personalized", u, ctx, catalog, k=5)}
+    div = {r.track.genre for r in recommend("diverse", u, ctx, catalog, k=5)}
+    return len(div) >= len(pers), f"distinct genres: diverse={len(div)} personalized={len(pers)}"
+
+
 INTENTS = [
     ("Recommendations are deterministic for a fixed seed", check_determinism),
     ("recommend() never returns more than k items", check_k),
@@ -79,6 +88,7 @@ INTENTS = [
     ("Personalized beats baseline on NDCG vs true relevance, CI excludes zero", check_personalized_wins),
     ("Popularity is excluded from true relevance (confounder only)", check_pop_not_in_truth),
     ("Provenance header carries seed, git_sha, config_hash, versions", check_provenance_fields),
+    ("The diverse variant spreads genres at least as well as personalized", check_diverse_spreads_genres),
 ]
 
 
