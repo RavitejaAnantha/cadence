@@ -1,7 +1,7 @@
 """Synthetic listeners and contexts. Deterministic, seeded, offline. No real user data.
 
 A listener has a genre affinity map and a baseline intensity taste. A context is the listening
-situation, which implies a target intensity. These are the only signals the recommender uses.
+situation, which implies a target intensity and a target title length.
 """
 
 from __future__ import annotations
@@ -20,6 +20,16 @@ SITUATION_TARGET_INTENSITY = {
     "commute": 0.60,
     "focus": 0.45,
     "bedtime": 0.20,
+}
+
+# Each situation also implies a target title length, normalized 0..1 where 1.0 is about 30 hours.
+# A commute wants something short, a road trip wants something long.
+SITUATION_TARGET_LENGTH = {
+    "commute": 0.20,
+    "bedtime": 0.35,
+    "workout": 0.40,
+    "focus": 0.45,
+    "road_trip": 0.85,
 }
 
 
@@ -41,6 +51,10 @@ class User:
 
 def target_intensity(context: Context) -> float:
     return SITUATION_TARGET_INTENSITY[context.situation]
+
+
+def target_length(context: Context) -> float:
+    return SITUATION_TARGET_LENGTH[context.situation]
 
 
 def build_users(seed: int = 0, n: int = 8) -> list[User]:

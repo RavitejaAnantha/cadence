@@ -10,3 +10,4 @@ Decontextualized knowledge about Cadence that holds across sessions. (Tulving: s
 - Verification is enforced by the pre-commit hook, not left to discipline.
 - Conventions: no em-dashes, no AI-isms, synthetic data only.
 - This repo makes no model calls. It is offline and deterministic by design.
+- A plausible feature is not a useful feature. Measure before enabling. Length-fit was added but kept off, because length carries no signal in the base preference model.

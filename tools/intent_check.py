@@ -16,7 +16,7 @@ from dataclasses import replace
 from cadence.catalog import build_catalog
 from cadence.provenance import run_header
 from cadence.recommender import DEFAULT_CONFIG, recommend
-from cadence.users import Context, build_users, get_user
+from cadence.users import Context, build_users, get_user, target_length
 from experiments.bootstrap import paired_delta_ci
 from experiments.data import true_relevance
 
@@ -81,6 +81,12 @@ def check_diverse_spreads_genres():
     return len(div) >= len(pers), f"distinct genres: diverse={len(div)} personalized={len(pers)}"
 
 
+def check_length_targets_ordered():
+    short = target_length(Context("commute"))
+    long_drive = target_length(Context("road_trip"))
+    return short < long_drive, f"commute target {short} < road_trip target {long_drive}"
+
+
 INTENTS = [
     ("Recommendations are deterministic for a fixed seed", check_determinism),
     ("recommend() never returns more than k items", check_k),
@@ -89,6 +95,7 @@ INTENTS = [
     ("Popularity is excluded from true relevance (confounder only)", check_pop_not_in_truth),
     ("Provenance header carries seed, git_sha, config_hash, versions", check_provenance_fields),
     ("The diverse variant spreads genres at least as well as personalized", check_diverse_spreads_genres),
+    ("A commute targets shorter titles than a road trip", check_length_targets_ordered),
 ]
 
 

@@ -1,7 +1,8 @@
 """Recommenders: a popularity baseline and a personalized scorer.
 
-The personalized score is a transparent weighted sum of three terms:
-    score = w_genre * genre_affinity + w_intensity * intensity_fit + w_popularity * popularity
+The personalized score is a transparent weighted sum:
+    score = w_genre * genre_affinity + w_intensity * intensity_fit
+            + w_popularity * popularity + w_length * length_fit
 
 Deterministic. Ties break by book_id so ordering is stable across machines. The model is
 trivial on purpose. The workflow around it is the subject.
@@ -13,7 +14,7 @@ from dataclasses import dataclass
 
 from .catalog import Book
 from .rationale import explain
-from .users import Context, User, target_intensity
+from .users import Context, User, target_intensity, target_length
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,7 @@ class RecommenderConfig:
     w_genre: float = 0.50
     w_intensity: float = 0.35
     w_popularity: float = 0.15
+    w_length: float = 0.0  # off by default; a length-fit term (see _length_match)
 
 
 DEFAULT_CONFIG = RecommenderConfig()
@@ -38,11 +40,22 @@ def _intensity_match(book: Book, context: Context) -> float:
     return 1.0 - abs(book.intensity - target_intensity(context))
 
 
+def _length_match(book: Book, context: Context) -> float:
+    """1.0 when book length matches the situation's target length, decaying linearly to 0.0.
+
+    A commute wants a short title, a road trip wants a long one. Length is normalized so 1.0 is
+    about 30 hours.
+    """
+    length_norm = min(1.0, book.length_hours / 30.0)
+    return 1.0 - abs(length_norm - target_length(context))
+
+
 def score_book(book: Book, user: User, context: Context, config: RecommenderConfig = DEFAULT_CONFIG) -> float:
     genre = config.w_genre * user.genre_affinity.get(book.genre, 0.0)
     intensity = config.w_intensity * _intensity_match(book, context)
     pop = config.w_popularity * book.popularity
-    return genre + intensity + pop
+    length = config.w_length * _length_match(book, context)
+    return genre + intensity + pop + length
 
 
 def recommend_personalized(

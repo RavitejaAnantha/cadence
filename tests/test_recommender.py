@@ -65,3 +65,19 @@ def test_diverse_respects_k_and_unique():
     recs = recommend("diverse", get_user(u, "u1"), Context("road_trip"), c, k=6)
     ids = [r.book.book_id for r in recs]
     assert len(recs) == 6 and len(ids) == len(set(ids))
+
+
+def test_length_targets_ordered():
+    from cadence.users import target_length
+
+    assert target_length(Context("commute")) < target_length(Context("road_trip"))
+
+
+def test_length_match_prefers_situation_length():
+    from cadence.catalog import Book
+    from cadence.recommender import _length_match
+
+    short = Book("b1", "Short", "A", "mystery", 0.5, 5.0, 0.5, 2020)
+    long_title = Book("b2", "Long", "A", "mystery", 0.5, 28.0, 0.5, 2020)
+    commute = Context("commute")
+    assert _length_match(short, commute) > _length_match(long_title, commute)
