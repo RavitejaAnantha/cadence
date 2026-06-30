@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+
+# Generated run artifacts (provenance headers carry timestamps; keep the dir, not the files)
+runs/*.json
+
+# OS
+.DS_Store
+
+# Note: uv.lock IS committed on purpose. Pinned, reproducible installs are the point.

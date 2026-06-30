@@ -1,0 +1,48 @@
+name: docs
+
+# Post-merge documentation routine. When a change lands on main, update the docs to match it.
+# With an ANTHROPIC_API_KEY secret, Claude reviews the merged diff and updates the API reference,
+# the affected prose docs, and the changelog (see .claude/skills/update-docs-after-merge).
+# Without a key, a deterministic fallback regenerates the API reference.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Sync the pinned environment
+        run: uv sync --extra dev
+
+      - name: AI doc routine (review the merged change, update docs)
+        if: env.HAS_KEY == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: "/update-docs-after-merge"
+          claude_args: "--max-turns 20"
+
+      - name: Deterministic fallback (no API key configured)
+        if: env.HAS_KEY != 'true'
+        run: |
+          uv run python -m tools.make_docs
+          if git diff --quiet docs/reference.md; then
+            echo "reference already current"
+          else
+            git config user.name "cadence-docs-bot"
+            git config user.email "cadence-docs-bot@users.noreply.github.com"
+            git add docs/reference.md
+            git commit -m "docs: regenerate API reference after merge [skip ci]"
+            git push
+          fi

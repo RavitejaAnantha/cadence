@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Sync the pinned environment
+        run: uv sync --extra dev
+      - name: Intent check (code matches stated intent)
+        run: uv run python -m tools.intent_check
+      - name: Tests
+        run: uv run pytest -q
