@@ -27,5 +27,9 @@ Documentation is not your job here. After the PR merges, the post-merge routine 
 change and updates the API reference, the affected prose docs, and the changelog (see
 .claude/skills/update-docs-after-merge and .github/workflows/docs.yml).
 
+After the work lands, record a durable learning in memory/: a dated note in episodic, and
+promote anything lasting to semantic. For experiments specifically, do not open a PR
+automatically. Report the result and ask first; if the answer is yes, run this flow.
+
 Conventions: no em-dashes, deterministic, synthetic data only, a confidence interval on every
 estimate. The full rules are in CLAUDE.md.

@@ -36,11 +36,16 @@ Three plain-file stores you can read with cat:
 - `memory/semantic.md`: durable facts and conventions.
 - `memory/procedural/*.md`: reusable playbooks.
 The taxonomy follows Tulving (episodic vs semantic) and CoALA's mapping onto agents. See REFERENCES.md.
+Always update memory from your learnings: after a unit of work or an experiment, add a dated note to episodic and promote anything durable to semantic. The outer loop is required, not optional.
 
 ## No model or network calls
 Cadence is deterministic and offline by design, so the pipeline is bit-reproducible and runs in
 CI without credentials. Do not add a network or model dependency without a strong reason; it
 breaks reproducibility and offline use.
+
+## After an experiment
+Do not open a PR automatically. Report the result, then ask whether to PR it. If yes, follow the
+ship-a-change skill. Either way, record the learning in memory.
 
 ## The flow (after each change)
 1. Branch. 2. Add the intent check. 3. Implement. 4. `uv run python -m tools.intent_check`. 5. `uv run pytest`.
