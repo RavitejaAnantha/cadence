@@ -50,3 +50,18 @@ def test_unknown_variant_raises():
     c, u = _setup()
     with pytest.raises(ValueError):
         recommend("nope", get_user(u, "u1"), Context("workout"), c)
+
+
+def test_diverse_spreads_genres():
+    c, u = _setup()
+    usr, ctx = get_user(u, "u1"), Context("workout")
+    pers_genres = {r.track.genre for r in recommend("personalized", usr, ctx, c, k=5)}
+    div_genres = {r.track.genre for r in recommend("diverse", usr, ctx, c, k=5)}
+    assert len(div_genres) >= len(pers_genres)
+
+
+def test_diverse_respects_k_and_unique():
+    c, u = _setup()
+    recs = recommend("diverse", get_user(u, "u1"), Context("party"), c, k=6)
+    ids = [r.track.track_id for r in recs]
+    assert len(recs) == 6 and len(ids) == len(set(ids))
