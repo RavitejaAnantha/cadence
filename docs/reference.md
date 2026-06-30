@@ -21,6 +21,7 @@ Diataxis quadrant: reference (information-oriented).
 - `Recommendation` (class) - Recommendation(track: 'Track', score: 'float', rationale: 'str')
 - `RecommenderConfig` (class) - RecommenderConfig(w_genre: 'float' = 0.5, w_energy: 'float' = 0.35, w_popularity: 'float' = 0.15)
 - `recommend(variant: 'str', user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
+- `recommend_diverse(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Personalized scores, re-ranked greedily to spread genres across the list (MMR-style).
 - `recommend_personalized(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - 
 - `recommend_popularity(user: 'User', context: 'Context', catalog: 'list[Track]', k: 'int' = 5, config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'list[Recommendation]'` (function) - Baseline: ignores the user and context, ranks by global popularity.
 - `score_track(track: 'Track', user: 'User', context: 'Context', config: 'RecommenderConfig' = RecommenderConfig(w_genre=0.5, w_energy=0.35, w_popularity=0.15)) -> 'float'` (function) - 
